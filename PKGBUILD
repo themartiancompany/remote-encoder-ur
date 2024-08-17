@@ -1,17 +1,13 @@
 # SPDX-License-Identifier: AGPL-3.0
 #
-# Maintainer:  Truocolo <truocolo@aol.com>
-# Maintainer:  Pellegrino Prevete <pellegrinoprevete@gmail.com>
+# Maintainer: Truocolo <truocolo@aol.com>
+# Maintainer: Pellegrino Prevete (tallero) <pellegrinoprevete@gmail.com>
 
-_os="$( \
-  uname \
-    -o)"
-_git=false
-_local=false
-_proj="hip"
-_pkgname=alternate-recorder
-pkgname="${_pkgname}-git"
-pkgver="0.0.0.0.0.0.0.0.0.0.0.0.0.1".r0.g"4c4209c22067ec422882a80eaad4569ca76a5b7b"
+_offline="false"
+_git="false"
+pkgname=remote-encoder
+pkgver=0.0.0.0.0.0.0.0.0.0.0.0.0.1
+_commit="4c4209c22067ec422882a80eaad4569ca76a5b7b"
 pkgrel=1
 _pkgdesc=(
   "Remote encode media files."
@@ -20,25 +16,23 @@ pkgdesc="${_pkgdesc[*]}"
 arch=(
   any
 )
-_gl="gitlab.com"
-_gh="github.com"
-_host="https://${_gh}"
-_ns='themartiancompany'
-_local="${HOME}/${_pkgname}"
-url="${_host}/${_ns}/${_pkgname}"
-_gh_api="https://api.${_gh}/repos/${_ns}/${_pkgname}"
+_http="https://github.com"
+_ns="themartiancompany"
+url="${_http}/${_ns}/${pkgname}"
 license=(
   AGPL3
 )
 depends=(
-  dynssh
+  "dynssh"
+  "rsync"
 )
-makedepends=(
-  make
-)
-checkdepends=(
-  shellcheck
-)
+_os="$( \
+  uname \
+    -o)"
+[[ "${_os}" != "GNU/Linux" ]] && \
+[[ "${_os}" == "Android" ]] && \
+  depends+=(
+  )
 optdepends=(
   'media-tools: media manipulation tools library'
   'record-tools: recording tools suite'
@@ -49,145 +43,63 @@ optdepends=(
     'android-camera-recorder: for recording from this device camera'
     'android-remote-camera-recorder: for recording from the camera of another device'
   )
-provides=(
-  "${_pkgname}=${pkgver}"
+makedepends=(
+  make
 )
-conflicts=(
-  "${_pkgname}"
+checkdepends=(
+  "shellcheck"
 )
-groups=(
- "${_proj}"
- "${_proj}-git"
-)
-_url="${url}"
-[[ "${_local}" == true ]] && \
-  _url="${_local}"
 source=()
-_branch="master"
+sha256sums=()
+_url="${url}"
+_tag="${_commit}"
+_tag_name="commit"
+_tarname="${pkgname}-${_tag}"
+[[ "${_offline}" == "true" ]] && \
+  url="file://${HOME}/${pkgname}"
 [[ "${_git}" == true ]] && \
   makedepends+=(
-    git
+    "git"
   ) && \
   source+=(
-    "${_pkgname}-${_branch}::git+${_url}#branch=${_branch}"
+    "${_tarname}::git+${_url}#${_tag_name}=${_tag}?signed"
+  ) && \
+  sha256sums+=(
+    SKIP
   )
 [[ "${_git}" == false ]] && \
-  makedepends+=(
-    curl
-    jq
-  ) && \
-  source+=(
-    "${_pkgname}.tar.gz::${_url}/archive/refs/heads/${_branch}.tar.gz"
-  )
-sha256sums=(
-  SKIP
+  if [[ "${_tag_name}" == 'pkgver' ]]; then
+    _tar="${_tarname}.tar.gz::${_url}/archive/refs/tags/${_tag}.tar.gz"
+    _sum="d4f4179c6e4ce1702c5fe6af132669e8ec4d0378428f69518f2926b969663a91"
+  elif [[ "${_tag_name}" == "commit" ]]; then
+    _tar="${_tarname}.zip::${_url}/archive/${_commit}.zip"
+    _sum="d503e715b71b773480a8578428dd77d9edfc12401bc6fb60c1885cdc626fcba7"
+  fi && \
+    source+=(
+      "${_tar}"
+    ) && \
+    sha256sums+=(
+      "${_sum}"
+    )
+validpgpkeys=(
+  # Truocolo <truocolo@aol.com>
+  '97E989E6CF1D2C7F7A41FF9F95684DBE23D6A3E9'
 )
 
-_nth() {
-  local \
-    _str="${1}" \
-    _n="${2}"
-  echo \
-    "${_str}" | \
-    awk \
-      -F '+' \
-      '{print $'"${_n}"'}'
-}
-
-_jq_pkgver() {
-  local \
-    _version \
-    _rev \
-    _commit
-  _version="$( \
-    curl \
-      --silent \
-      "${_gh_api}/tags" | \
-      jq \
-        '.[0].name')"
-  _version_commit="$( \
-    curl \
-      --silent \
-      "${_gh_api}/tags" | \
-      jq \
-        '.[0].commit.sha')"
-  _rev="$( \
-    curl \
-      --silent \
-      "${_gh_api}/commits" | \
-      jq \
-        'map(.sha == '${_version_commit}' ) | index(true)')"
-  _commit="$( \
-    curl \
-      --silent \
-      "${_gh_api}/commits" | \
-      jq \
-        '.[0].sha')"
-  printf \
-    "%s.r%s.g%s" \
-    "${_version}" \
-    "${_rev}" \
-    "${_commit}"
-}
-
-_parse_ver() {
-  local \
-    _pkgver="${1}" \
-    _out="" \
-    _ver \
-    _rev \
-    _commit
-  _ver="$( \
-    _nth \
-      "${_pkgver}" \
-      "1")"
-  _rev="$( \
-    _nth \
-      "${_pkgver}" \
-      "2")"
-  _commit="$( \
-    _nth \
-      "${_pkgver}" \
-      "3")"
-  _out=${_ver}
-  [[ "${_rev}" != "" ]] && \
-    _out+=".r${_rev}"
-  [[ "${_commit}" != "" ]] && \
-    _out+=".${_commit}"
-  echo \
-    "${_out}"
-}
-
-_git_pkgver() {
-  local \
-    _pkgver
-  _pkgver="$( \
-    git \
-      describe \
-      --tags \
-      --long | \
-      sed \
-        's/-/+/g')"
-  _parse_ver \
-    "${_pkgver}"
-}
-
-pkgver() {
+check() {
   cd \
-    "${_pkgname}-${_branch}"
-  if [[ "${_git}" == true ]]; then
-    _git_pkgver
-  elif [[ "${_git}" == false ]]; then
-    _jq_pkgver
-  fi
+    "${_tarname}"
+  make \
+    -k \
+    check
 }
 
 package() {
   cd \
-    "${_pkgname}-${_branch}"
+    "${_tarname}"
   make \
-    DESTDIR="${pkgdir}" \
     PREFIX="/usr" \
+    DESTDIR="${pkgdir}" \
     install
 }
 
