@@ -1,6 +1,6 @@
 pkgbase = remote-encoder
 	pkgdesc = Remote encode media files.
-	pkgver = 0.0.0.0.0.0.0.0.0.0.0.0.0.1.1
+	pkgver = 0.0.0.0.0.0.0.0.0.0.0.0.0.1.1.1
 	pkgrel = 1
 	url = https://github.com/themartiancompany/remote-encoder
 	arch = any
@@ -14,8 +14,8 @@ pkgbase = remote-encoder
 	optdepends = android-recorder: for recording from this device screen.
 	optdepends = android-camera-recorder: for recording from this device camera
 	optdepends = android-remote-camera-recorder: for recording from the camera of another device
-	source = remote-encoder-26eb06e83d7bab2c558e306f056776c7baf17a04.zip::https://github.com/themartiancompany/remote-encoder/archive/26eb06e83d7bab2c558e306f056776c7baf17a04.zip
+	source = remote-encoder-4d856f02b99338e97f365505f1e1883d49aee383.zip::https://github.com/themartiancompany/remote-encoder/archive/4d856f02b99338e97f365505f1e1883d49aee383.zip
 	validpgpkeys = 97E989E6CF1D2C7F7A41FF9F95684DBE23D6A3E9
-	sha256sums = 068f3750f15bb9167b3c07e4e1563ecd986d1227608b13804a7ba984565b4058
+	sha256sums = 981c734088eeb737322bb01201175d80b8b89c25334618e7de5daad32ad04480
 
 pkgname = remote-encoder

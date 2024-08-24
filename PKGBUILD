@@ -6,8 +6,8 @@
 _offline="false"
 _git="false"
 pkgname=remote-encoder
-pkgver=0.0.0.0.0.0.0.0.0.0.0.0.0.1.1
-_commit="26eb06e83d7bab2c558e306f056776c7baf17a04"
+pkgver=0.0.0.0.0.0.0.0.0.0.0.0.0.1.1.1
+_commit="4d856f02b99338e97f365505f1e1883d49aee383"
 pkgrel=1
 _pkgdesc=(
   "Remote encode media files."
@@ -73,7 +73,7 @@ _tarname="${pkgname}-${_tag}"
     _sum="d4f4179c6e4ce1702c5fe6af132669e8ec4d0378428f69518f2926b969663a91"
   elif [[ "${_tag_name}" == "commit" ]]; then
     _tar="${_tarname}.zip::${_url}/archive/${_commit}.zip"
-    _sum="068f3750f15bb9167b3c07e4e1563ecd986d1227608b13804a7ba984565b4058"
+    _sum="981c734088eeb737322bb01201175d80b8b89c25334618e7de5daad32ad04480"
   fi && \
     source+=(
       "${_tar}"
